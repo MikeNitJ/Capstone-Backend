@@ -8,6 +8,7 @@ const router = express.Router()
 router.get("/", async (req, res) => {
     try{
         res.json(await Food.find())
+        
     }catch(error){
         res.status(400).json(error)
     }
