@@ -2,7 +2,7 @@ const express = require("express")
 const User = require("../models/User")
 const router = express.Router()
 const bcrypt = require("bcrypt")
-
+const jwt = require('jsonwebtoken');
 // INdex Delete Update Create (Edit) Show
 
 // INDEX
@@ -14,8 +14,9 @@ router.post("/login", async (req, res) => {
             bcrypt.compare(req.body.password, userToLogin.password, (err, result) => {
                 if (result) {
                     req.session.userId = userToLogin._id;
+                    const accessToken = jwt.sign({ foo: 'bar' }, 'shhhhh');
                     req.session.name = userToLogin.name;
-                    res.status(200).json({ message: "Login successful" });
+                    res.status(200).json({ message: "Login successful", accessToken, });
                 } else {
                     res.status(401).json({ error: "Incorrect Password" });
                 }
