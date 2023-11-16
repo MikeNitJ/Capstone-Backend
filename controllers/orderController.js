@@ -30,9 +30,14 @@ router.post("/", async (req, res) =>{
 // SHOW Route for Cart page or Order receiving page
 router.get("/:id", async (req, res) => {
     try{
-        res.json(await Order.findById(req.params.id)
-        .populate("foods")
-        .populate("userId"))
+        // res.json(await Order.findById(req.params.id)
+        // .populate("foods")
+        // .populate("userId"))
+        const order = await Order.findById(req.params.id)
+      .populate("foods")
+      .populate("userId");
+
+    res.json(order);
     }catch(error){
         res.status(400).json(error)
     }
@@ -100,6 +105,31 @@ router.post("/createcart", async (req, res) => {
       res.status(400).json(error);
     }
   });
+
+// DELETE Route to remove a food item from the order
+router.delete('/:orderId/food/:foodId', async (req, res) => {
+    try {
+      const { orderId, foodId } = req.params;
+  
+      // Use $pull to remove the specified foodId from the foods array
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { $pull: { foods: foodId } },
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      res.json({ message: 'Food removed from the cart', order: updatedOrder });
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  });
+  
+  module.exports = router;
+  
 
 
 
